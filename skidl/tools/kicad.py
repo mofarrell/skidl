@@ -33,7 +33,6 @@ import re
 import time
 from builtins import dict, int, range, str, zip
 from collections import namedtuple
-from random import randint
 
 from future import standard_library
 
@@ -81,7 +80,7 @@ def _load_sch_lib_(self, filename=None, lib_search_paths_=None, lib_section=None
         raise FileNotFoundError(
             "Unable to open KiCad Schematic Library File {}".format(filename)
         )
-    
+
     if suffix == ".kicad_sym":
         _load_sch_lib_kicad_v6(self, f, filename, lib_search_paths_)
     else:
@@ -217,7 +216,7 @@ def _split_into_symbols(libstr):
     symbol_name = "_"  # Name of current symbol being assembled.
     symbols = {}  # Symbols indexed by their names.
 
-    # Go through the pieces and assemble each symbol. 
+    # Go through the pieces and assemble each symbol.
     for piece in pieces:
 
         # Get the symbol name immediately following the delimiter.
@@ -277,7 +276,7 @@ def _load_sch_lib_kicad_v6(self, f, filename, lib_search_paths_):
         # Join the various text pieces by newlines so the ^ and $ special characters
         # can be used to detect the start and end of a piece of text during RE searches.
         search_text = "\n".join([filename, part_name, description, keywords])
-        
+
         # Create a Part object and add it to the library object.
         self.add_parts(
             Part(
@@ -944,12 +943,7 @@ def _gen_netlist_comp_(self):
 
     # Embed the hierarchy along with a random integer into the sheetpath for each component.
     # This enables hierarchical selection in pcbnew.
-    hierarchy = add_quotes(
-        "/"
-        + getattr(self, "hierarchy", ".").replace(".", "/")
-        + "/"
-        + str(randint(0, 2 ** 64 - 1))
-    )
+    hierarchy = add_quotes("/" + self.hierarchical_name.replace(".", "/"))
     tstamps = hierarchy
 
     fields = ""
@@ -1068,7 +1062,7 @@ def _gen_xml_net_(self):
 def _gen_svg_comp_(self, symtx, net_stubs=None):
     """
     Generate SVG for this component.
-    
+
     Args:
         self: Part object for which an SVG symbol will be created.
         net_stubs: List of Net objects whose names will be connected to
